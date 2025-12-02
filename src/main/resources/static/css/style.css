@@ -1,0 +1,528 @@
+/* ===== СБРОС И БАЗОВЫЕ СТИЛИ ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #4361ee;
+    --primary-dark: #3a0ca3;
+    --secondary: #7209b7;
+    --accent: #f72585;
+    --success: #4cc9f0;
+    --danger: #f94144;
+    --warning: #f8961e;
+    --light: #f8f9fa;
+    --dark: #1a1a2e;
+    --gray: #8d99ae;
+    --card-bg: #ffffff;
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    --shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.12);
+    --radius: 16px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+    color: var(--dark);
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* ===== КОНТЕЙНЕРЫ ===== */
+.app-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.auth-container {
+    max-width: 480px;
+    margin: 60px auto;
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 40px;
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+}
+
+/* ===== ЗАГОЛОВКИ ===== */
+h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+h2 {
+    font-size: 1.8rem;
+    color: var(--primary-dark);
+    margin-bottom: 1.5rem;
+    padding-bottom: 10px;
+    border-bottom: 3px solid;
+    border-image: linear-gradient(90deg, var(--primary), transparent) 1;
+}
+
+/* ===== КАРТОЧКИ ===== */
+.car-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+    border: 1px solid rgba(67, 97, 238, 0.1);
+    position: relative;
+}
+
+.car-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-hover);
+    border-color: var(--primary);
+}
+
+.car-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.car-model {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+}
+
+.car-plate {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.car-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.car-detail {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.car-detail i {
+    color: var(--primary);
+    width: 20px;
+}
+
+/* ===== КНОПКИ ===== */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 28px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn:hover::after {
+    width: 300px;
+    height: 300px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(67, 97, 238, 0.3);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #00b09b, #96c93d);
+    color: white;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, var(--danger), #d90429);
+    color: white;
+}
+
+.btn-telegram {
+    background: linear-gradient(135deg, #0088cc, #00acee);
+    color: white;
+}
+
+.btn-telegram:hover {
+    background: linear-gradient(135deg, #0077b3, #0099cc);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 136, 204, 0.3);
+}
+
+.btn-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* ===== ФОРМЫ ===== */
+.form-group {
+    margin-bottom: 24px;
+    position: relative;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--primary-dark);
+    font-size: 0.95rem;
+}
+
+.form-input {
+    width: 100%;
+    padding: 16px;
+    border: 2px solid #e1e5e9;
+    border-radius: 10px;
+    font-size: 1rem;
+    background: var(--light);
+    transition: var(--transition);
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+    background: white;
+}
+
+.form-input-icon {
+    position: relative;
+}
+
+.form-input-icon i {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray);
+}
+
+.form-input-icon input {
+    padding-left: 45px;
+}
+
+/* ===== НАВИГАЦИЯ ===== */
+.navbar {
+    background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
+    padding: 20px 40px;
+    border-radius: var(--radius);
+    margin-bottom: 30px;
+    box-shadow: var(--shadow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-brand {
+    color: white;
+    font-size: 1.8rem;
+    font-weight: 800;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.nav-menu {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.nav-item {
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    transition: var(--transition);
+    font-weight: 500;
+    position: relative;
+}
+
+.nav-item::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: white;
+    transition: var(--transition);
+    transform: translateX(-50%);
+}
+
+.nav-item:hover::after {
+    width: 80%;
+}
+
+.nav-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.user-badge {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ===== УВЕДОМЛЕНИЯ ===== */
+.notification {
+    padding: 16px 20px;
+    border-radius: 12px;
+    margin: 20px 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    animation: slideIn 0.3s ease;
+    border-left: 5px solid;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.notification-success {
+    background: linear-gradient(135deg, #d4edda, #c3e6cb);
+    border-color: #28a745;
+    color: #155724;
+}
+
+.notification-error {
+    background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+    border-color: #dc3545;
+    color: #721c24;
+}
+
+.notification-warning {
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+    border-color: #ffc107;
+    color: #856404;
+}
+
+/* ===== ТАБЛИЦЫ ===== */
+.data-table {
+    width: 100%;
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    border-collapse: collapse;
+}
+
+.data-table thead {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+}
+
+.data-table th {
+    padding: 18px 20px;
+    text-align: left;
+    color: white;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.data-table tbody tr {
+    border-bottom: 1px solid #f0f0f0;
+    transition: var(--transition);
+}
+
+.data-table tbody tr:hover {
+    background: #f8faff;
+}
+
+.data-table td {
+    padding: 16px 20px;
+    vertical-align: middle;
+}
+
+/* ===== ЛОАДЕР ===== */
+.loader {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ===== АНИМАЦИИ ===== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+/* ===== АДАПТИВНОСТЬ ===== */
+@media (max-width: 768px) {
+    .app-container {
+        padding: 10px;
+    }
+
+    .auth-container {
+        margin: 20px;
+        padding: 25px;
+    }
+
+    .navbar {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px;
+    }
+
+    .nav-menu {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .nav-item {
+        width: 100%;
+        text-align: center;
+    }
+
+    .car-details {
+        grid-template-columns: 1fr;
+    }
+
+    .btn-group {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+}
+
+/* ===== УТИЛИТЫ ===== */
+.text-center {
+    text-align: center;
+}
+
+.mt-20 {
+    margin-top: 20px;
+}
+
+.mb-20 {
+    margin-bottom: 20px;
+}
+
+.p-20 {
+    padding: 20px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.flex {
+    display: flex;
+}
+
+.flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.gap-10 {
+    gap: 10px;
+}
+
+.gap-20 {
+    gap: 20px;
+}
+
+.w-100 {
+    width: 100%;
+}

@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Автомобили - Car Messenger</title>
+
+  <!-- Стили -->
+  <link th:href="@{/css/style.css}" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    .dropdown-container {
+      position: relative;
+    }
+
+    .dropdown-list {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 10px;
+      max-height: 300px;
+      overflow-y: auto;
+      z-index: 1000;
+      display: none;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .dropdown-item {
+      padding: 12px 15px;
+      cursor: pointer;
+      border-bottom: 1px solid #f0f0f0;
+      transition: background 0.2s;
+    }
+
+    .dropdown-item:hover {
+      background: #f8f9fa;
+    }
+
+    .dropdown-item:last-child {
+      border-bottom: none;
+    }
+
+    .car-dropdown-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .car-dropdown-main {
+      font-weight: 600;
+      color: var(--dark);
+    }
+
+    .car-dropdown-details {
+      font-size: 0.9rem;
+      color: var(--gray);
+    }
+
+    .dropdown-telegram-btn {
+      background: #0088cc;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      margin-left: 10px;
+    }
+
+    .dropdown-telegram-btn:hover {
+      background: #0077b3;
+    }
+  </style>
+</head>
+<body>
+<!-- Навигация -->
+<nav class="navbar">
+  <div class="nav-brand">
+    <i class="fas fa-car"></i>
+    <span>Car Messenger</span>
+  </div>
+
+  <div class="nav-menu">
+    <div class="user-badge">
+      <i class="fas fa-user-circle"></i>
+      <span th:text="${currentUser}"></span>
+    </div>
+    <a th:href="@{/cars/add}" class="nav-item">
+      <i class="fas fa-plus"></i> Добавить авто
+    </a>
+    <a th:href="@{/auth/logout}" class="nav-item">
+      <i class="fas fa-sign-out-alt"></i> Выйти
+    </a>
+  </div>
+</nav>
+
+<div class="app-container">
+  <div class="text-center mb-20">
+    <h1><i class="fas fa-car"></i> Все автомобили</h1>
+    <p style="color: var(--gray);">Найдите автомобиль и свяжитесь с владельцем</p>
+  </div>
+
+  <!-- Уведомления -->
+  <div th:if="${param.registered}" class="notification notification-success">
+    <i class="fas fa-check-circle"></i>
+    <span>Регистрация успешна! Ваш автомобиль добавлен.</span>
+  </div>
+
+  <div th:if="${param.added}" class="notification notification-success">
+    <i class="fas fa-check-circle"></i>
+    <span>Автомобиль успешно добавлен</span>
+  </div>
+
+  <div th:if="${param.deleted}" class="notification notification-success">
+    <i class="fas fa-check-circle"></i>
+    <span>Автомобиль успешно удален</span>
+  </div>
+
+  <div th:if="${param.notOwner}" class="notification notification-error">
+    <i class="fas fa-exclamation-circle"></i>
+    <span>Нельзя удалить чужой автомобиль</span>
+  </div>
+
+  <div th:if="${param.deleteError}" class="notification notification-error">
+    <i class="fas fa-exclamation-circle"></i>
+    <span>Ошибка при удалении автомобиля</span>
+  </div>
+
+  <!-- Поиск с выпадающим списком -->
+  <div class="card mb-20">
+    <h3 style="margin-bottom: 15px;">
+      <i class="fas fa-search"></i> Быстрый поиск автомобиля
+    </h3>
+
+    <div class="dropdown-container">
+      <input type="text"
+             class="form-input"
+             placeholder="Введите гос. номер, марку или владельца..."
+             id="searchInput"
+             autocomplete="off"
+             style="width: 100%;">
+
+      <div class="dropdown-list" id="dropdownList">
+        <!-- Выпадающий список будет заполняться JavaScript -->
+      </div>
+    </div>
+
+    <div style="margin-top: 15px; display: flex; gap: 10px;">
+      <button onclick="showMyCars()" class="btn" style="background: var(--primary); color: white;">
+        <i class="fas fa-user"></i> Мои автомобили
+      </button>
+      <button onclick="clearSearch()" class="btn" style="background: var(--gray); color: white;">
+        <i class="fas fa-times"></i> Очистить
+      </button>
+    </div>
+  </div>
+
+  <!-- Список всех автомобилей -->
+  <div class="card mb-20" id="allCarsSection">
+    <h3 style="margin-bottom: 15px;">
+      <i class="fas fa-car"></i> Все автомобили в системе
+      <span style="color: var(--gray); font-size: 0.9rem; margin-left: 10px;">
+        (<span th:text="${not #lists.isEmpty(cars) ? cars.size() : 0}"></span> шт.)
+      </span>
+    </h3>
+
+    <div th:if="${not #lists.isEmpty(cars)}">
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+        <div class="car-card" th:each="car : ${cars}">
+          <div class="car-card-header">
+            <div class="car-brand">
+              <i class="fas fa-car"></i>
+              <span th:text="${car.brand}"></span>
+            </div>
+            <div class="car-plate" th:text="${car.licensePlate}"></div>
+          </div>
+
+          <div class="car-details">
+            <div class="car-detail">
+              <i class="fas fa-id-card"></i>
+              <span>Номер: <strong th:text="${car.licensePlate}"></strong></span>
+            </div>
+            <div class="car-detail">
+              <i class="fas fa-user-tag"></i>
+              <span>Владелец: <strong th:text="${car.ownerTelegram}"></strong></span>
+            </div>
+          </div>
+
+          <div class="btn-group">
+            <a th:href="@{'/cars/message/' + ${car.id}}"
+               class="btn btn-telegram"
+               target="_blank">
+              <i class="fab fa-telegram"></i> Написать
+            </a>
+
+            <a th:href="@{'/cars/delete/' + ${car.id}}"
+               class="btn btn-danger"
+               th:if="${car.ownerTelegram == currentUser}"
+               onclick="return confirm('Удалить этот автомобиль?')">
+              <i class="fas fa-trash"></i> Удалить
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div th:if="${#lists.isEmpty(cars)}" class="text-center p-20">
+      <i class="fas fa-car" style="font-size: 3rem; color: var(--gray);"></i>
+      <p style="color: var(--gray); margin-top: 15px;">Нет автомобилей</p>
+    </div>
+  </div>
+
+  <!-- Кнопка добавления -->
+  <div class="text-center">
+    <a th:href="@{/cars/add}" class="btn btn-success">
+      <i class="fas fa-plus"></i> Добавить автомобиль
+    </a>
+  </div>
+</div>
+
+<!-- JavaScript -->
+<script th:src="@{/js/app.js}"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const dropdownList = document.getElementById('dropdownList');
+
+    // Показываем выпадающий список при фокусе
+    searchInput.addEventListener('focus', function() {
+      if (this.value.trim().length > 0) {
+        performSearch(this.value.trim());
+      } else {
+        showRecentCars();
+      }
+    });
+
+    // Поиск при вводе
+    searchInput.addEventListener('input', function() {
+      const term = this.value.trim();
+      if (term.length > 0) {
+        performSearch(term);
+      } else {
+        dropdownList.style.display = 'none';
+      }
+    });
+
+    // Скрытие dropdown при клике вне его
+    document.addEventListener('click', function(e) {
+      if (!dropdownList.contains(e.target) && e.target !== searchInput) {
+        dropdownList.style.display = 'none';
+      }
+    });
+
+    // Автофокус на поле поиска
+    setTimeout(() => {
+      searchInput.focus();
+    }, 300);
+  });
+
+  function performSearch(searchTerm) {
+    const dropdownList = document.getElementById('dropdownList');
+    const searchLower = searchTerm.toLowerCase();
+
+    // Получаем данные всех автомобилей из скрытого контейнера
+    const carElements = document.querySelectorAll('.car-card');
+    const results = [];
+
+    carElements.forEach(card => {
+      const brand = card.querySelector('.car-brand span').textContent;
+      const plate = card.querySelector('.car-plate').textContent;
+      const carId = card.querySelector('.btn-telegram').href.split('/').pop();
+      const owner = card.querySelector('.car-details .car-detail:nth-child(2) strong').textContent;
+
+      const searchText = (brand + ' ' + plate + ' ' + owner).toLowerCase();
+
+      if (searchText.includes(searchLower)) {
+        results.push({
+          id: carId,
+          brand: brand,
+          plate: plate,
+          owner: owner
+        });
+      }
+    });
+
+    showDropdown(results);
+  }
+
+  function showDropdown(cars) {
+    const dropdownList = document.getElementById('dropdownList');
+
+    if (cars.length === 0) {
+      dropdownList.innerHTML = '<div class="dropdown-item" style="color: var(--gray); text-align: center;">Автомобили не найдены</div>';
+      dropdownList.style.display = 'block';
+      return;
+    }
+
+    let html = '';
+
+    // Показываем максимум 5 результатов
+    cars.slice(0, 5).forEach(car => {
+      html += `
+        <div class="dropdown-item" onclick="selectCar(${car.id})">
+          <div class="car-dropdown-info">
+            <div>
+              <div class="car-dropdown-main">
+                ${car.brand}
+              </div>
+              <div class="car-dropdown-details">
+                ${car.plate} • ${car.owner}
+              </div>
+            </div>
+            <button class="dropdown-telegram-btn" onclick="event.stopPropagation(); messageOwner(${car.id})">
+              <i class="fab fa-telegram"></i> Написать
+            </button>
+          </div>
+        </div>
+      `;
+    });
+
+    if (cars.length > 5) {
+      html += `<div class="dropdown-item" style="color: var(--gray); text-align: center;">
+                И еще ${cars.length - 5} автомобилей...
+              </div>`;
+    }
+
+    dropdownList.innerHTML = html;
+    dropdownList.style.display = 'block';
+  }
+
+  function showRecentCars() {
+    const dropdownList = document.getElementById('dropdownList');
+    const carElements = document.querySelectorAll('.car-card');
+    const recentCars = [];
+
+    // Берем первые 3 автомобиля
+    Array.from(carElements).slice(0, 3).forEach(card => {
+      const brand = card.querySelector('.car-brand span').textContent;
+      const plate = card.querySelector('.car-plate').textContent;
+      const carId = card.querySelector('.btn-telegram').href.split('/').pop();
+      const owner = card.querySelector('.car-details .car-detail:nth-child(2) strong').textContent;
+
+      recentCars.push({
+        id: carId,
+        brand: brand,
+        plate: plate,
+        owner: owner
+      });
+    });
+
+    if (recentCars.length > 0) {
+      let html = '<div class="dropdown-item" style="color: var(--gray); font-size: 0.9rem;">Недавние автомобили:</div>';
+
+      recentCars.forEach(car => {
+        html += `
+          <div class="dropdown-item" onclick="selectCar(${car.id})">
+            <div class="car-dropdown-info">
+              <div>
+                <div class="car-dropdown-main">
+                  ${car.brand}
+                </div>
+                <div class="car-dropdown-details">
+                  ${car.plate}
+                </div>
+              </div>
+              <button class="dropdown-telegram-btn" onclick="event.stopPropagation(); messageOwner(${car.id})">
+                <i class="fab fa-telegram"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      });
+
+      dropdownList.innerHTML = html;
+      dropdownList.style.display = 'block';
+    }
+  }
+
+  function selectCar(carId) {
+    // Можно реализовать выделение автомобиля в списке
+    console.log('Selected car:', carId);
+    document.getElementById('dropdownList').style.display = 'none';
+
+    // Прокручиваем к выбранному автомобилю
+    const carCard = document.querySelector(`[href="/cars/message/${carId}"]`).closest('.car-card');
+    if (carCard) {
+      carCard.style.border = '2px solid var(--primary)';
+      carCard.style.backgroundColor = '#f0f7ff';
+      carCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+
+  function messageOwner(carId) {
+    window.open(`/cars/message/${carId}`, '_blank');
+    document.getElementById('dropdownList').style.display = 'none';
+    document.getElementById('searchInput').value = '';
+  }
+
+  function showMyCars() {
+    const currentUser = "[[${currentUser}]]";
+    const carCards = document.querySelectorAll('.car-card');
+
+    // Скрываем все автомобили
+    carCards.forEach(card => {
+      card.style.display = 'none';
+    });
+
+    // Показываем только мои автомобили
+    carCards.forEach(card => {
+      const owner = card.querySelector('.car-details .car-detail:nth-child(2) strong').textContent;
+      if (owner === currentUser || owner === '@' + currentUser || currentUser === '@' + owner) {
+        card.style.display = 'block';
+      }
+    });
+
+    // Показываем сообщение, если нет моих авто
+    const myCars = Array.from(carCards).filter(card => {
+      const owner = card.querySelector('.car-details .car-detail:nth-child(2) strong').textContent;
+      return owner === currentUser || owner === '@' + currentUser || currentUser === '@' + owner;
+    });
+
+    if (myCars.length === 0) {
+      alert('У вас нет добавленных автомобилей');
+    }
+  }
+
+  function clearSearch() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('dropdownList').style.display = 'none';
+
+    // Показываем все автомобили
+    const carCards = document.querySelectorAll('.car-card');
+    carCards.forEach(card => {
+      card.style.display = 'block';
+      card.style.border = '';
+      card.style.backgroundColor = '';
+    });
+  }
+</script>
+</body>
+</html>

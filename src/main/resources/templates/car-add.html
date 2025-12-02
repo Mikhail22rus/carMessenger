@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Добавить автомобиль - Car Messenger</title>
+
+    <!-- Стили -->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<!-- Навигация -->
+<nav class="navbar">
+    <div class="nav-brand">
+        <i class="fas fa-car"></i>
+        <span>Car Messenger</span>
+    </div>
+
+    <div class="nav-menu">
+        <div class="user-badge">
+            <i class="fas fa-user-circle"></i>
+            <span th:text="${currentUser}"></span>
+        </div>
+        <a th:href="@{/cars/list}" class="nav-item">
+            <i class="fas fa-list"></i> Мои автомобили
+        </a>
+        <a th:href="@{/auth/logout}" class="nav-item">
+            <i class="fas fa-sign-out-alt"></i> Выйти
+        </a>
+    </div>
+</nav>
+
+<!-- Главный контейнер -->
+<div class="app-container">
+    <div style="max-width: 600px; margin: 0 auto;">
+        <!-- Заголовок -->
+        <div class="text-center mb-20">
+            <h1><i class="fas fa-car"></i> Добавить автомобиль</h1>
+            <p style="color: var(--gray);">Заполните информацию об автомобиле</p>
+        </div>
+
+        <!-- Уведомления -->
+        <div th:if="${error}" class="notification notification-error">
+            <i class="fas fa-exclamation-circle"></i>
+            <span th:text="${error}"></span>
+        </div>
+
+        <!-- Форма добавления -->
+        <form th:action="@{/cars/add}" method="post" class="card p-20" id="addCarForm">
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-car"></i> Марка автомобиля
+                </label>
+                <input type="text"
+                       name="brand"
+                       class="form-input"
+                       placeholder="Например: Toyota, BMW, Audi"
+                       required
+                       id="brand">
+            </div>
+
+
+
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-id-card"></i> Государственный номер
+                </label>
+                <input type="text"
+                       name="licensePlate"
+                       class="form-input"
+                       placeholder="Например: А123БВ77"
+                       required
+                       id="licensePlate"
+                       pattern="[А-ЯA-Z0-9]{6,10}"
+                       title="Пример: А123БВ77">
+                <small style="color: var(--gray); display: block; margin-top: 5px;">
+                    Введите номер в формате А123БВ77
+                </small>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fab fa-telegram"></i> Telegram владельца
+                </label>
+                <div class="form-input-icon">
+                    <i class="fas fa-at"></i>
+                    <input type="text"
+                           name="ownerTelegram"
+                           class="form-input"
+                           placeholder="@username"
+                           required
+                           pattern="@[a-zA-Z0-9_]{5,32}"
+                           id="ownerTelegram">
+                </div>
+                <small style="color: var(--gray); display: block; margin-top: 5px;">
+                    Telegram username владельца автомобиля
+                </small>
+            </div>
+
+            <div class="btn-group" style="margin-top: 30px;">
+                <button type="submit" class="btn btn-primary" id="submitBtn">
+                    <i class="fas fa-plus"></i> Добавить автомобиль
+                </button>
+                <a th:href="@{/cars/list}" class="btn" style="background: var(--gray); color: white;">
+                    <i class="fas fa-times"></i> Отмена
+                </a>
+            </div>
+        </form>
+
+        <!-- Подсказки -->
+        <div class="card mt-20">
+            <h3 style="margin-bottom: 15px; color: var(--primary);">
+                <i class="fas fa-lightbulb"></i> Как это работает?
+            </h3>
+            <ul style="list-style: none; padding-left: 0;">
+                <li style="margin-bottom: 10px; padding-left: 25px; position: relative;">
+                    <i class="fas fa-check" style="color: var(--success); position: absolute; left: 0;"></i>
+                    После добавления автомобиль появится в вашем списке
+                </li>
+                <li style="margin-bottom: 10px; padding-left: 25px; position: relative;">
+                    <i class="fas fa-check" style="color: var(--success); position: absolute; left: 0;"></i>
+                    Вы сможете быстро перейти в Telegram-чат с владельцем
+                </li>
+                <li style="padding-left: 25px; position: relative;">
+                    <i class="fas fa-check" style="color: var(--success); position: absolute; left: 0;"></i>
+                    Указывайте актуальный Telegram username для связи
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script th:src="@{/js/app.js}"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('addCarForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const telegramInput = document.getElementById('ownerTelegram');
+
+        // Валидация Telegram username
+        telegramInput.addEventListener('blur', function() {
+            const value = this.value.trim();
+            if (value && !value.startsWith('@')) {
+                showNotification('Telegram username должен начинаться с @', 'warning');
+            }
+        });
+
+        // Валидация формы
+        form.addEventListener('submit', function(e) {
+            // Проверка Telegram username
+            const telegramValue = telegramInput.value.trim();
+            if (telegramValue && !telegramValue.startsWith('@')) {
+                e.preventDefault();
+                showNotification('Telegram username должен начинаться с @', 'error');
+                telegramInput.focus();
+                return false;
+            }
+
+            // Проверка госномера (простая валидация)
+            const plate = document.getElementById('licensePlate').value.trim();
+            if (plate && plate.length < 6) {
+                e.preventDefault();
+                showNotification('Госномер слишком короткий', 'error');
+                return false;
+            }
+
+            // Показываем loader
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<div class="loader"></div> Добавление...';
+            submitBtn.disabled = true;
+
+            return true;
+        });
+    });
+</script>
+</body>
+</html>

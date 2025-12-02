@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Регистрация - Car Messenger</title>
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<nav class="navbar">
+    <div class="nav-brand">
+        <i class="fas fa-car"></i>
+        <span>Car Messenger</span>
+    </div>
+    <a th:href="@{/auth/login}" class="nav-item">
+        <i class="fas fa-sign-in-alt"></i> Вход
+    </a>
+</nav>
+
+<div class="app-container">
+    <div class="text-center mb-20">
+        <h1><i class="fas fa-user-plus"></i> Регистрация</h1>
+        <p style="color: var(--gray);">Создайте аккаунт и добавьте свой автомобиль</p>
+    </div>
+
+    <!-- Уведомления -->
+    <div th:if="${error}" class="notification notification-error">
+        <i class="fas fa-exclamation-circle"></i>
+        <span th:text="${error}"></span>
+    </div>
+
+    <!-- Единая форма регистрации + автомобиль -->
+    <form th:action="@{/auth/register}" method="post" class="card p-20" accept-charset="UTF-8">
+        <h3 style="margin-bottom: 20px; color: var(--primary);">
+            <i class="fas fa-user"></i> Данные пользователя
+        </h3>
+
+        <!-- Поля пользователя -->
+        <div class="form-group">
+            <label class="form-label">
+                <i class="fas fa-user"></i> Telegram username
+            </label>
+            <div class="form-input-icon">
+                <i class="fas fa-at"></i>
+                <input type="text"
+                       name="username"
+                       class="form-input"
+                       placeholder="@username"
+                       required
+                       pattern="@[a-zA-Z0-9_]{5,32}">
+            </div>
+            <small style="color: var(--gray); display: block; margin-top: 5px;">
+                Ваш Telegram username для связи
+            </small>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">
+                <i class="fas fa-lock"></i> Пароль
+            </label>
+            <input type="password"
+                   name="password"
+                   class="form-input"
+                   placeholder="Не менее 6 символов"
+                   required
+                   minlength="6">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">
+                <i class="fas fa-shield-alt"></i> Контрольный вопрос
+            </label>
+            <select name="securityQuestion" class="form-input" required>
+                <option value="">Выберите вопрос</option>
+                <option value="Девичья фамилия матери">Девичья фамилия матери</option>
+                <option value="Любимое блюдо">Любимое блюдо</option>
+                <option value="Имя первого питомца">Имя первого питомца</option>
+                <option value="Город рождения">Город рождения</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">
+                <i class="fas fa-key"></i> Ответ на вопрос
+            </label>
+            <input type="text"
+                   name="securityAnswer"
+                   class="form-input"
+                   placeholder="Ответ для восстановления пароля"
+                   required>
+        </div>
+
+        <hr style="margin: 30px 0; border: none; border-top: 1px solid #e0e0e0;">
+
+        <h3 style="margin-bottom: 20px; color: var(--primary);">
+            <i class="fas fa-car"></i> Данные автомобиля
+        </h3>
+
+        <!-- Поля автомобиля -->
+        <div class="form-group">
+            <label class="form-label">
+                <i class="fas fa-car"></i> Марка автомобиля
+            </label>
+            <input type="text"
+                   name="carBrand"
+                   class="form-input"
+                   placeholder="Например: Toyota, BMW, Audi"
+                   required>
+        </div>
+
+
+
+        <div class="form-group">
+            <label class="form-label">
+                <i class="fas fa-id-card"></i> Государственный номер
+            </label>
+            <input type="text"
+                   name="carLicensePlate"
+                   class="form-input"
+                   placeholder="Например: А123БВ77"
+                   required
+                   pattern="[А-ЯA-Z0-9]{6,10}"
+                   title="Пример: А123БВ77">
+            <small style="color: var(--gray); display: block; margin-top: 5px;">
+                Введите номер в формате А123БВ77
+            </small>
+        </div>
+
+        <div class="btn-group" style="margin-top: 30px;">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-user-plus"></i> Зарегистрироваться и добавить авто
+            </button>
+            <a th:href="@{/auth/login}" class="btn" style="background: var(--gray); color: white;">
+                <i class="fas fa-times"></i> Отмена
+            </a>
+        </div>
+
+        <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+            <p style="margin: 0; color: var(--gray); font-size: 0.9rem;">
+                <i class="fas fa-info-circle"></i>
+                Регистрируясь, вы соглашаетесь добавить минимум один автомобиль в систему.
+                Это необходимо для полноценной работы приложения.
+            </p>
+        </div>
+    </form>
+</div>
+
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>
