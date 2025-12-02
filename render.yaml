@@ -1,0 +1,40 @@
+services:
+  - type: web
+    name: carmessenger
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    env: docker
+    plan: free  # или starter/standard для продакшена
+    region: frankfurt  # или ближайший к вам
+
+    # Автоматический деплой
+    autoDeploy: true
+
+    # Переменные окружения
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: carmessenger-db
+          property: connectionString
+      - key: JAVA_OPTS
+        value: "-Xmx300m -Xss512k -XX:+UseCompressedOops"
+      - key: SPRING_PROFILES_ACTIVE
+        value: "prod"
+
+    # Health check (обязательно для Render)
+    healthCheckPath: /actuator/health
+    initialDelaySec: 30
+
+    # Масштабирование
+    numInstances: 1
+
+    # Домен (опционально)
+    domains:
+      - carmessenger.onrender.com
+
+databases:
+  - name: carmessenger-db
+    databaseName: carmessenger
+    user: carmessenger_user
+    plan: free  # или starter/standard/pro для продакшена
+    region: frankfurt
